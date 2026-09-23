@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+
+# Test / local evidence artifacts
+.coverage
+htmlcov/
+.artifacts/
+
+# Local projection packages
+*.zip

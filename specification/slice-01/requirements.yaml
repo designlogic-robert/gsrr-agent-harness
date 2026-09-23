@@ -1,0 +1,357 @@
+version: v0_1
+status: BOUNDED_PUBLIC_PROJECTION
+scope: GSRR Operation Core Slice 01 deterministic closed fixture
+production_status: NOT_PRODUCTION
+requirement_count: 27
+requirements:
+- requirement_id: S01-R01
+  statement: Bound typed proposals to explicit intent, object, definition and version; never infer authority.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#typed-artifact-contracts
+  test_mapping:
+  - S01-T01
+  - S01-T02
+  - S01-T03
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  - S01-T08
+  test_obligation: Reject missing material identity/grant and swapped references.
+- requirement_id: S01-R02
+  statement: Bind immutable initial authority/observed baselines and use the declared distinct freshness/observation
+    read sequence.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: README.md#runtime-model
+  test_mapping:
+  - S01-T01
+  - S01-T02
+  - S01-T03
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  - RS-V05
+  - S01-T08
+  test_obligation: Test initial binding, pre-commit, pre-dispatch, post-effect and final-gate seams; no duplicate
+    domain read for historical retrieval.
+- requirement_id: S01-R03
+  statement: Use one-candidate supplied selection predicate and preserve non-selection without granting authority.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: README.md#runtime-model
+  test_mapping:
+  - S01-T01
+  - S01-T02
+  - S01-T03
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  test_obligation: Selected invalid target still fails domain validity; empty/multiple pools hold.
+- requirement_id: S01-R04
+  statement: Check the fixture allowed edge and every precondition before authorization.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T02
+  - S01-T03
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  test_obligation: DRAFT to APPROVED refuses before commit/dispatch.
+- requirement_id: S01-R05
+  statement: Consume scoped external fixture authority evidence; refuse missing/inactive/wrong issuer or scope.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#fixture-state-and-authority
+  test_mapping:
+  - S01-T01
+  - S01-T03
+  - S01-T06
+  - S01-T07
+  - RS-V06
+  - S01-T08
+  test_obligation: Missing or mismatched authority yields no commit, no effect, authoritative DRAFT.
+- requirement_id: S01-R06
+  statement: Build and validate an envelope containing every required effect and bounded forbidden-action evidence
+    obligation.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  - RS-V01
+  - S01-T08
+  test_obligation: Missing fixture-boundary or closed-history obligation prevents planning/commit.
+- requirement_id: S01-R07
+  statement: Planner emits one immutable fixed-input step or INFEASIBLE; commit/key metadata are excluded.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T04
+  - S01-T07
+  - RS-V03
+  test_obligation: Reject added semantic inputs, missing mandatory obligations and planner-created commit/key fields.
+  scope_note: R26 specifies the small delegated boundary-instruction extension.
+- requirement_id: S01-R08
+  statement: Independently validate the exact immutable plan, complete referenced obligations and allowed input
+    shape.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T04
+  - S01-T06
+  - S01-T07
+  - RS-V03
+  - S01-T08
+  test_obligation: Reject target/effect/implementation substitution and mutation after validation.
+- requirement_id: S01-R09
+  statement: Retain run-local realization responsibility and an exact immutable dispatch payload before invocation.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T05
+  - S01-T06
+  - S01-T07
+  - RS-V03
+  - S01-T08
+  test_obligation: Authority remains DRAFT after commit; payload is constructed only from validated fixed inputs
+    plus finite metadata; record failure prevents dispatch.
+- requirement_id: S01-R10
+  statement: Look up duplicate key and exact tuple before new execution reads; return prior evidence without redispatch
+    or reprojection.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T05
+  - S01-T07
+  - RS-V05
+  test_obligation: After successful v2 projection, exact old tuple returns historical records; changed tuple refuses;
+    incomplete prior result stays held.
+- requirement_id: S01-R11
+  statement: Dispatch exactly the retained commit payload after equality, fresh permission/version checks and a
+    single run-local key claim.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T02
+  - S01-T03
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  - S01-T07
+  - RS-V01
+  - RS-V03
+  - S01-T08
+  test_obligation: 'Swap commit/key/object/implementation or add payload fields: zero calls. Valid invocation once;
+    no adapter direct store/network/dispatcher handles.'
+- requirement_id: S01-R12
+  statement: Treat execution report as occurrence evidence, including failure and uncertainty.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T05
+  - S01-T06
+  - S01-T08
+  test_obligation: False success and exceptions remain visible; no report directly writes authority.
+- requirement_id: S01-R13
+  statement: Reconcile required effects and all declared forbidden-action predicates using independent state and
+    complete provider-mediated action history.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T05
+  - S01-T06
+  - RS-V01
+  - RS-V02
+  - S01-T08
+  test_obligation: Mutate/restore, deletion/recreation, APPROVED/PUBLISHED and wrong-object variants fail or are
+    prevented and recorded; missing action completeness holds.
+- requirement_id: S01-R14
+  statement: Use five active reachable reconciliation outcomes with explicit precedence and retained secondary findings.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T05
+  - S01-T06
+  - RS-V02
+  - S01-T08
+  test_obligation: Exercise SUCCESS, FAILED, STALE_STATE, AMBIGUOUS and UNRESOLVED witnesses; PARTIAL_REALIZATION
+    is rejected as an inactive unsupported value.
+- requirement_id: S01-R15
+  statement: Every terminal projection evaluation retains a final PROJECT, DO_NOT_PROJECT or HOLD_PROJECTION; only
+    fresh complete success can advance authority.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T02
+  - S01-T03
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  - RS-V01
+  - RS-V02
+  - RS-V04
+  - RS-V06
+  - S01-T08
+  test_obligation: Test failed reconciliation, inactive grant with unchanged versions, stale final state, unresolved
+    evidence and success; every evaluation has a retained final decision.
+- requirement_id: S01-R16
+  statement: Publish successful authority update, final decision and StateProjected as one local fixture operation;
+    failed publication retains a negative decision without authority mutation.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T01
+  - S01-T06
+  - RS-V04
+  - S01-T08
+  test_obligation: Inject write/event preparation/publication failure; no authority change or StateProjected; final
+    outcome retained even when journal unavailable.
+- requirement_id: S01-R17
+  statement: Preserve mandatory material causal events and immutable artifacts; creation/start observations may
+    be optional.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: README.md#runtime-model
+  test_mapping:
+  - S01-T01
+  - S01-T02
+  - S01-T03
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  - S01-T07
+  - RS-V04
+  - S01-T08
+  test_obligation: Check required order and all artifact refs with optional events absent; preserve dispatch claim
+    and final failed decision when event append unavailable.
+- requirement_id: S01-R18
+  statement: Apply one supplied fixed MSP-derived sufficiency profile through existing responsible evaluators without
+    weakening hard gates.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: README.md#runtime-model
+  test_mapping:
+  - S01-T01
+  - S01-T02
+  - S01-T03
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  - S01-T08
+  test_obligation: Same profile/version bound at candidate, plan and verification applications; skipping a required
+    predicate never passes.
+- requirement_id: S01-R19
+  statement: Keep governing fixture immutable; runtime evidence can only propose definition revision.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: contracts.md#fixture-state-and-authority
+  test_mapping:
+  - S01-T01
+  - S01-T02
+  - S01-T03
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  - S01-T07
+  - S01-T08
+  test_obligation: Snapshot definition before/after all scenarios; unchanged.
+- requirement_id: S01-R20
+  statement: Compare original source bindings to current versions/grants at pre-commit, pre-dispatch and final projection
+    boundaries.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: README.md#runtime-model
+  test_mapping:
+  - S01-T01
+  - S01-T06
+  - S01-T07
+  - RS-V05
+  - S01-T08
+  test_obligation: Distinct stale injection seams hold; own committed effect increment is accepted; old duplicate
+    tuple is historical retrieval, not new execution.
+- requirement_id: S01-R21
+  statement: Every non-success attempt is terminal and must retain failure evidence without resuming. Automatic
+    creation of a distinct attempt is permitted only by S01-R22 through S01-R25; admission, dispatch, effect, possible
+    effect or unknown effect forbids automatic regeneration. Compensation remains deferred.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: README.md#runtime-model
+  test_mapping:
+  - S01-T01
+  - S01-T02
+  - S01-T03
+  - S01-T04
+  - S01-T05
+  - S01-T06
+  - S01-T07
+  - S01-T08
+  test_obligation: Assert terminal attempt identity/evidence never resume; only eligible pre-admission new IDs may
+    progress; any admission/possible or unknown effect creates zero automatic successors.
+- requirement_id: S01-R22
+  statement: Deterministic governance and existing supervisory coordination may authorize a fresh realization-plan
+    attempt only for explicitly enabled generated-plan envelope violations under a valid approved target, before
+    any admission or possible effect.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: README.md#runtime-model
+  test_mapping:
+  - S01-T07
+  test_obligation: Check eligible plan failure versus prohibited target, insufficient authority, disabled policy,
+    stale/ambiguous facts, committed/dispatch/unknown-effect cases; no failure alone implies retry.
+- requirement_id: S01-R23
+  statement: Before new-attempt creation, freshly revalidate original state/versions, target, definition, authority,
+    approval subject, unchanged envelope, retained terminal evidence and available budget without rebinding approved
+    WHAT.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: README.md#runtime-model
+  test_mapping:
+  - S01-T07
+  test_obligation: Unchanged WHAT reuses exact approval/envelope; changed approval subject, revoked authority or
+    stale bindings create no successor; any new plan must receive fresh conformance validation.
+- requirement_id: S01-R24
+  statement: Finite supplied max_attempts counts the initial attempt and each successor; exhaustion or configured
+    repeated-failure threshold opens a scope circuit that blocks automatic progression and requires immediate human
+    investigation.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: README.md#runtime-model
+  test_mapping:
+  - S01-T07
+  test_obligation: Use max_attempts=2 for two total attempts; third allocation fails; duplicate scheduling never
+    consumes twice or creates another ID; circuit cannot auto-reset or be bypassed with a new key.
+- requirement_id: S01-R25
+  statement: Retain immutable attempt lineage, failed rule/evidence, eligibility/recheck facts, scheduling/budget
+    history, terminal dispositions and policy-specific human escalation in existing RuntimeEvent records before
+    successor activation.
+  class: BOUNDED_RUNTIME_OBLIGATION
+  public_surface: README.md#runtime-model
+  test_mapping:
+  - S01-T07
+  test_obligation: Inspect A/B identities and ordering, failure records, budget deltas and circuit escalation; missing
+    retention creates no successor; model participation alone creates no human-approval requirement.
+- requirement_id: S01-R26
+  statement: Bind explicit or delegated realization as immutable HOW under the same mode-neutral approval/envelope,
+    authority, effects and evidence; provider internal planning cannot redefine WHAT or bypass GSRR reconciliation.
+  class: BOUNDED_REALIZATION_MODE_EXTENSION
+  public_surface: contracts.md#execution-reconciliation-and-projection
+  test_mapping:
+  - S01-T08
+  - S01-T04
+  - S01-T05
+  test_obligation: Assert external PLANNER called only in explicit mode; provider owns pure internal planning only
+    in delegated mode; compare immutable WHAT exactly, full independent evidence and both fresh REVIEW outcomes;
+    reject mode/target expansion.
+- requirement_id: S01-R27
+  statement: Distinguish human judgment, policy-reserved authorization and circuit investigation; require exact
+    immutable approval-subject evidence only when governing policy requires it, never solely because AI participated.
+  class: BOUNDED_AUTHORITY_AND_ESCALATION_CONTRACT
+  public_surface: contracts.md#fixture-state-and-authority
+  test_mapping:
+  - S01-T03
+  - S01-T07
+  - S01-T08
+  test_obligation: Exercise missing ordinary authority, reserved human evidence, mutated approved subject, ordinary
+    automatic eligible retry and circuit investigation without invented authorization.

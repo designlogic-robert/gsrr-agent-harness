@@ -1,0 +1,76 @@
+%% Public bounded projection of GSRR Operation Core Slice 01.\nflowchart TD
+  START["Request and idempotency key"] --> DUP{"Retained key?"}
+  DUP -->|"Exact tuple"| HIST["Historical retrieval; no reads or new execution"]
+  DUP -->|"Changed tuple"| FAIL["FAIL_NONRETRYABLE; retain refusal"]
+  DUP -->|"Incomplete or unknown"| HOLD["HOLD_AMBIGUOUS; retain hold and judgment requirement"]
+  DUP -->|"New"| ATT["AttemptStarted; initial identity"]
+  ATT --> READ{"Initial authority and observation readable?"}
+  READ -->|"Missing or conflicting"| HOLD
+  READ -->|"Complete"| CAND["StructuredIntent and CandidateTransition"]
+  CAND --> SEL{"One candidate; supplied predicate passes?"}
+  SEL -->|"Empty, multiple, unresolved or no selection"| HOLD
+  SEL -->|"Selected"| VAL{"DASA validity and authority checks"}
+  VAL -->|"Known prohibited target or insufficient grant"| FAIL
+  VAL -->|"Missing, stale or conflicting facts"| HOLD
+  VAL -->|"Explicit human-reserved policy; evidence absent"| HUMAN["HUMAN_AUTHORIZATION_REQUIRED; exact bound evidence"]
+  VAL -->|"PASS"| ENV["ApprovedTransition and complete mode-neutral ExecutionEnvelope"]
+  ENV --> MODE{"Immutable realization mode"}
+  MODE -->|"EXPLICIT_PLAN"| PLAN["PLANNER creates generated ExecutionPlan"]
+  MODE -->|"DELEGATED_REALIZATION"| RESP["Coordinator binds capability responsibility in ExecutionPlan"]
+  PLAN --> PG{"Independent PlanValidationResult"}
+  PLAN -->|"INFEASIBLE or missing material; no plan"| HOLD
+  RESP --> PG
+  PG -->|"Missing obligations or unknown facts"| HOLD
+  PG -->|"Known noneligible defect"| FAIL
+  PG -->|"Eligible generated explicit plan violates envelope"| TERM["Failed attempt terminal; retain rule and failure evidence"]
+  TERM --> ELIG{"Policy and no admission or possible effect established?"}
+  ELIG -->|"Known ineligible or policy disabled"| FAIL
+  ELIG -->|"Unknown, stale or missing evidence"| HOLD
+  ELIG -->|"REJECT_RETRYABLE"| FRESH{"Fresh state, authority, subject and envelope checks"}
+  FRESH -->|"Known invalid"| FAIL
+  FRESH -->|"Stale or unresolved"| HOLD
+  FRESH -->|"Human-reserved subject evidence missing"| HUMAN
+  FRESH -->|"All pass"| BUD{"Finite budget and repeated-failure threshold"}
+  BUD -->|"Exhausted or threshold reached"| OPEN["CIRCUIT_OPEN; retained immediate human investigation"]
+  BUD -->|"Invalid or partial scheduling"| HOLD
+  BUD -->|"Capacity; coherent retained allocation"| NEW["NewAttemptAuthorized and AttemptStarted; DISTINCT successor"]
+  NEW --> PLAN
+  PG -->|"PASS"| PRE{"Fresh pre-commit checks; sole active nonterminal attempt"}
+  PRE -->|"Known invalid"| FAIL
+  PRE -->|"Stale, missing or unresolved scheduling"| HOLD
+  PRE -->|"PASS"| COMMIT["RealizationCommit and event retained; admission_seen latched"]
+  COMMIT --> GUARD{"Exact payload and fresh pre-dispatch guards"}
+  GUARD -->|"Known mismatch"| FAIL
+  GUARD -->|"Stale or unknown"| HOLD
+  GUARD -->|"PASS"| CLAIM["Claim run-local key once"]
+  CLAIM --> RUNMODE{"Committed mode"}
+  RUNMODE -->|"Explicit"| EX["Execute validated one-step HOW"]
+  RUNMODE -->|"Delegated"| DE["Provider owns internal pure HOW"]
+  EX --> EFFECT["One mediated capability invocation; complete requested-effect history"]
+  DE --> EFFECT
+  EFFECT --> RESULT["ExecutionResult; SUCCESS, FAILURE or UNKNOWN is a report"]
+  RESULT --> OBS["Independent fresh observation and closed action interval"]
+  OBS --> REC{"GSRR reconciliation; preserve all findings"}
+  REC -->|"Known forbidden action, denied request, failure or evidenced mismatch"| NEG["RECONCILIATION_FAILED"]
+  REC -->|"Unrelated writer or changed authority"| STALE["STALE_STATE"]
+  REC -->|"Conflicting or unknown attribution"| AMBIG["RECONCILIATION_AMBIGUOUS"]
+  REC -->|"Missing read or incomplete interval"| UNRES["UNRESOLVED"]
+  REC -->|"Every required predicate passes"| OK["RECONCILED_SUCCESS; eligibility only"]
+  NEG --> SLOT{"Reserve final outcome retention"}
+  STALE --> SLOT
+  AMBIG --> SLOT
+  UNRES --> SLOT
+  OK --> SLOT
+  SLOT -->|"Unavailable"| NOEVAL["Hold before evaluation; no write or fabricated decision"]
+  SLOT -->|"Available; failed reconciliation"| DN["Retain DO_NOT_PROJECT; no authority change"]
+  SLOT -->|"Available; stale, ambiguous or unresolved"| HP["Retain HOLD_PROJECTION; preserve current authority"]
+  SLOT -->|"Available; reconciliation success"| FINAL{"Fresh final authority, grant, observation and history checks"}
+  FINAL -->|"Known invalid grant or predicate"| DN
+  FINAL -->|"Missing or stale"| HP
+  FINAL -->|"PASS"| PUB{"Conditional aggregate publication"}
+  PUB -->|"Preparation or publication fails"| RET["Retain DO_NOT_PROJECT / FAILED in reserved slot; no authority change"]
+  PUB -->|"Applied"| PROJECT["Retain PROJECT / APPLIED and StateProjected; authoritative REVIEW"]
+  DN --> STOP["Terminal result; no post-admission successor or compensation"]
+  HP --> STOP
+  RET --> STOP
+  PROJECT --> STOP

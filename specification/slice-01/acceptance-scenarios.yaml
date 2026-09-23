@@ -1,0 +1,615 @@
+version: v0_1
+status: BOUNDED_PUBLIC_PROJECTION
+scope: GSRR Operation Core Slice 01 deterministic closed fixture
+production_status: NOT_PRODUCTION
+base_scenario_count: 8
+diagnostic_case_group_count: 6
+fixture_contracts:
+- README.md
+- contracts.md
+- requirements.yaml
+universal_assertions:
+- All mandatory references resolve to retained immutable records; exact original source and definition bindings preserved.
+- Every created attempt is counted once; every failed attempt remains terminal; no unapproved effects or definition mutation.
+- For every completed final projection evaluation exactly one immutable final decision is retained, even if negative; no fabricated
+  evaluation for pre-dispatch refusal.
+- Failure injection is deterministic bounded test data; executable verification is performed by the public pytest suite.
+scenarios:
+- scenario_id: S01-T01
+  name: Successful realization
+  setup: Complete mediated REVIEW-only action interval, active scoped grant, exact payload and fresh final gate.
+  initial_state: DRAFT with distinct authority/observation version namespaces
+  expected_events:
+  - AttemptStarted
+  - IntentStructured
+  - CandidateSelected
+  - TransitionValidated
+  - TransitionAuthorized
+  - ExecutionPlanValidated
+  - TransitionCommitted
+  - ExecutionCompleted
+  - TransitionReconciled
+  - StateProjected
+  expected_final_authoritative_state: REVIEW
+  expected_final_projection: PROJECT / APPLIED / changed=true; same commit/payload/observation; authoritative REVIEW; observation
+    and authority increment once.
+  variants:
+  - variant_id: T01-V01
+    setup: Initial state read unavailable; separately zero or two candidates, unresolved supplied predicate, missing intent
+      identity or missing sufficiency obligation.
+    expected: HELD with retained applicable evidence, no fabricated snapshot/selected candidate, no commit, dispatch or projection
+      evaluation.
+  base_realization_mode: EXPLICIT_PLAN
+  retry_enabled: false
+  assertions:
+  - Authority remains DRAFT through commit/execution/reconciliation until PROJECT/APPLIED.
+  - One invocation, one own observation increment and one authority increment; exact payload and full provider history retained.
+  - No forbidden action, definition change or extra capability; immutable final ProjectionDecision and causal StateProjected
+    published together.
+  requirement_refs:
+  - S01-R01
+  - S01-R02
+  - S01-R03
+  - S01-R04
+  - S01-R05
+  - S01-R06
+  - S01-R07
+  - S01-R08
+  - S01-R09
+  - S01-R10
+  - S01-R11
+  - S01-R12
+  - S01-R13
+  - S01-R14
+  - S01-R15
+  - S01-R16
+  - S01-R17
+  - S01-R18
+  - S01-R19
+  - S01-R20
+  - S01-R21
+- scenario_id: S01-T02
+  name: Invalid target transition
+  setup: Selection-eligible but invalid APPROVED target.
+  initial_state: DRAFT with distinct authority/observation version namespaces
+  expected_events:
+  - AttemptStarted
+  - IntentStructured
+  - CandidateSelected
+  - TransitionValidated
+  - TransitionRefused
+  expected_final_authoritative_state: DRAFT
+  expected_final_projection: 'No projection evaluation/decision: refusal before approval/commit. Authoritative DRAFT; zero
+    adapter calls.'
+  variants: []
+  base_realization_mode: EXPLICIT_PLAN
+  retry_enabled: false
+  assertions:
+  - Requested APPROVED is FAIL_NONRETRYABLE even with retry enabled; retain terminal failure and no new attempt, commit, invocation,
+    reconciliation or invented ProjectionDecision.
+  requirement_refs:
+  - S01-R01
+  - S01-R02
+  - S01-R03
+  - S01-R04
+  - S01-R11
+  - S01-R15
+  - S01-R17
+  - S01-R18
+  - S01-R19
+  - S01-R21
+- scenario_id: S01-T03
+  name: Insufficient authority
+  setup: Allowed REVIEW edge with known missing/inactive/wrong-scope grant; unresolved evidence is a separate held variant.
+  initial_state: DRAFT with distinct authority/observation version namespaces
+  expected_events:
+  - AttemptStarted
+  - IntentStructured
+  - CandidateSelected
+  - TransitionValidated
+  - TransitionRefused
+  expected_final_authoritative_state: DRAFT
+  expected_final_projection: No projection evaluation; no approval/commit/dispatch. DRAFT remains authoritative.
+  variants:
+  - variant_id: T03-V01
+    setup: Otherwise admissible but supplied policy explicitly reserves authorization to a human, with evidence absent.
+    expected: HUMAN_AUTHORIZATION_REQUIRED, no commit or invocation; do not invent a grant. Ordinary missing authority remains
+      distinct.
+  - variant_id: T03-V02
+    setup: Supply valid evidence bound to exact immutable subject; then separately mutate that material subject without reauthorization.
+    expected: Unchanged subject may pass normal gates. Changed subject cannot reuse evidence; stop for required explicit reauthorization,
+      zero automatic bypass.
+  base_realization_mode: EXPLICIT_PLAN
+  retry_enabled: false
+  assertions:
+  - 'Missing or known invalid grant: FAIL_NONRETRYABLE, no commit/dispatch/automatic successor. Unknown evidence status: HOLD_AMBIGUOUS.'
+  requirement_refs:
+  - S01-R01
+  - S01-R02
+  - S01-R03
+  - S01-R04
+  - S01-R05
+  - S01-R11
+  - S01-R15
+  - S01-R17
+  - S01-R18
+  - S01-R19
+  - S01-R21
+  - S01-R27
+- scenario_id: S01-T04
+  name: Plan exceeds envelope
+  setup: Envelope valid; plan expands target/effects/implementation/fixed-input shape.
+  initial_state: DRAFT with distinct authority/observation version namespaces
+  expected_events:
+  - AttemptStarted
+  - IntentStructured
+  - CandidateSelected
+  - TransitionValidated
+  - TransitionAuthorized
+  - ExecutionPlanValidated
+  - TransitionRefused
+  expected_final_authoritative_state: DRAFT
+  expected_final_projection: No commit, dispatch or projection evaluation. DRAFT remains authoritative.
+  variants:
+  - variant_id: T04-V01
+    setup: Delegated boundary instruction changes target to APPROVED, adds content mutation, expands implementation or accepts
+      only a subset of envelope evidence obligations.
+    expected: Known expansion REFUSED; missing material HELD; zero commit/dispatch/projection. Deterministic delegated instruction
+      failure is not an enabled generated-plan retry class.
+  - variant_id: T04-V02
+    setup: Replace immutable mode/plan after validation, or add mode/attempt/semantic fields to the dispatch payload.
+    expected: Equality/reference guard prevents invocation; same key with changed plan tuple refuses.
+  base_realization_mode: EXPLICIT_PLAN
+  retry_enabled: false
+  assertions:
+  - Known plan expansion is refused before commit/dispatch; base retry disabled. Missing obligation is held, never default
+    PASS.
+  requirement_refs:
+  - S01-R01
+  - S01-R02
+  - S01-R03
+  - S01-R04
+  - S01-R06
+  - S01-R07
+  - S01-R08
+  - S01-R11
+  - S01-R15
+  - S01-R17
+  - S01-R18
+  - S01-R19
+  - S01-R21
+  - S01-R26
+- scenario_id: S01-T05
+  name: Tool reports success but state unchanged
+  setup: SUCCESS report, closed complete interval with no applied effect, observed DRAFT exactly at baseline.
+  initial_state: DRAFT with distinct authority/observation version namespaces
+  expected_events:
+  - AttemptStarted
+  - IntentStructured
+  - CandidateSelected
+  - TransitionValidated
+  - TransitionAuthorized
+  - ExecutionPlanValidated
+  - TransitionCommitted
+  - ExecutionCompleted
+  - ReconciliationFailed
+  - TransitionRefused
+  expected_final_authoritative_state: DRAFT
+  expected_final_projection: RECONCILIATION_FAILED then final DO_NOT_PROJECT / NOT_ATTEMPTED / changed=false; authoritative
+    DRAFT.
+  variants:
+  - variant_id: T05-V01
+    setup: DELEGATED_REALIZATION provider reports native SUCCESS but independently observed DOC-001 remains DRAFT with complete
+      evidence.
+    expected: Same failed reconciliation and retained negative ProjectionDecision; no projection or retry.
+  - variant_id: T05-V02
+    setup: Provider reports REVIEW/success but independent closed interval or required read is missing.
+    expected: UNRESOLVED / HOLD_PROJECTION and HOLD_AMBIGUOUS control, unless a known violation takes precedence; never infer
+      realization from opacity.
+  base_realization_mode: EXPLICIT_PLAN
+  retry_enabled: false
+  assertions:
+  - 'SUCCESS with independent state still DRAFT and complete baseline history: RECONCILIATION_FAILED; retained DO_NOT_PROJECT/NOT_ATTEMPTED;
+    authoritative DRAFT.'
+  - No fresh successor after admission, even if no actual effect.
+  requirement_refs:
+  - S01-R01
+  - S01-R02
+  - S01-R03
+  - S01-R04
+  - S01-R06
+  - S01-R09
+  - S01-R10
+  - S01-R11
+  - S01-R12
+  - S01-R13
+  - S01-R14
+  - S01-R15
+  - S01-R17
+  - S01-R18
+  - S01-R19
+  - S01-R21
+  - S01-R26
+- scenario_id: S01-T06
+  name: Stale source state
+  setup: Inject source/grant or unrelated observation changes at declared boundaries.
+  initial_state: DRAFT with distinct authority/observation version namespaces
+  expected_events:
+  - AttemptStarted
+  - Applicable successful prefix
+  - TransitionHeld
+  expected_final_authoritative_state: CURRENT_VERIFIED_AUTHORITATIVE_STATE
+  expected_final_projection: 'Pre-dispatch: no evaluation/dispatch as applicable. Post-execution or final-gate staleness:
+    HOLD_PROJECTION / NOT_ATTEMPTED / changed=false; preserve latest verified authority.'
+  variants:
+  - 'Before commit: current v2 vs bound v1 -> HELD, no commit/invocation.'
+  - 'Between commit and dispatch: v2 -> HELD with retained commit, zero invocation.'
+  - 'After execution: unrelated authority/observed lineage -> STALE_STATE, final HOLD_PROJECTION, no stale overwrite.'
+  - 'After reconciliation: fresh observation/history token differs -> HOLD_PROJECTION.'
+  - Own one-step bound observation increment -> not stale.
+  - Known forbidden invocation writes with extra version increments -> FAILED, not erased as stale.
+  base_realization_mode: EXPLICIT_PLAN
+  retry_enabled: false
+  assertions:
+  - 'Inject stale authority or observation before commit: HOLD, no commit/dispatch.'
+  - 'Inject between commit and dispatch: commit retained, HOLD, zero dispatch; admission_seen prevents successor.'
+  - 'Inject after execution or before final projection: preserve current verified authority, no invalid PROJECT, retain HOLD_PROJECTION;
+    own expected increment alone is not stale.'
+  requirement_refs:
+  - S01-R01
+  - S01-R02
+  - S01-R03
+  - S01-R04
+  - S01-R05
+  - S01-R06
+  - S01-R08
+  - S01-R09
+  - S01-R11
+  - S01-R12
+  - S01-R13
+  - S01-R14
+  - S01-R15
+  - S01-R16
+  - S01-R17
+  - S01-R18
+  - S01-R19
+  - S01-R20
+  - S01-R21
+- scenario_id: S01-T07
+  name: Terminal plan failures, distinct successor and finite circuit
+  setup: Valid retained ApprovedTransition DOC-001 DRAFT -> REVIEW and unchanged validated envelope; trusted no-effect generator;
+    policy explicitly enables GENERATED_PLAN_ENVELOPE_VIOLATION.
+  initial_state: Authoritative DRAFT authority_version=1; observed DRAFT observation_version=1; definition and external scoped
+    grant valid; no admission/dispatch.
+  retry_policy:
+    retry_enabled: true
+    allowed_failure_classes:
+    - GENERATED_PLAN_ENVELOPE_VIOLATION
+    max_attempts: 2
+    repeated_failure_threshold_or_null: null
+  sequence:
+  - step: 1
+    attempt_id: ATTEMPT-A
+    attempt_number: 1
+    prior_attempt_id: null
+    plan_id: PLAN-A
+    event: AttemptStarted
+    attempts_created: 1
+  - step: 2
+    attempt_id: ATTEMPT-A
+    plan_result: REFUSED
+    failure_class: GENERATED_PLAN_ENVELOPE_VIOLATION
+    supervisory_disposition: REJECT_RETRYABLE
+    terminal: true
+    commit_count: 0
+    dispatch_count: 0
+    effects_count: 0
+    retained_failure: true
+  - step: 3
+    checks: Original versions/definition/target/grant/exact approval subject/envelope unchanged; no scope admission/possible
+      effect; terminal history retained; budget remains.
+    event: NewAttemptAuthorized
+    next_attempt_id: ATTEMPT-B
+    attempts_created_before: 1
+    attempts_created_after: 2
+  - step: 4
+    attempt_id: ATTEMPT-B
+    attempt_number: 2
+    prior_attempt_id: ATTEMPT-A
+    plan_id: PLAN-B
+    event: AttemptStarted
+    same_approval_and_envelope: true
+  - step: 5
+    attempt_id: ATTEMPT-B
+    plan_result: REFUSED
+    terminal: true
+    commit_count: 0
+    dispatch_count: 0
+    effects_count: 0
+    retained_failure: true
+  - step: 6
+    supervisory_disposition: CIRCUIT_OPEN
+    attempts_created: 2
+    remaining_creation_capacity: 0
+    next_attempt_created: false
+    human_escalation: CIRCUIT_INVESTIGATION
+    all_failure_history_retained: true
+  expected_events:
+  - AttemptStarted
+  - ExecutionPlanValidated
+  - TransitionRefused
+  - RetryEligibilityDetermined
+  - NewAttemptAuthorized
+  - AttemptStarted
+  - ExecutionPlanValidated
+  - TransitionRefused
+  - RetryEligibilityDetermined
+  - CircuitOpened
+  - HumanEscalationRequired
+  expected_final_authoritative_state: DRAFT
+  expected_final_projection: No commit/dispatch/reconciliation/projection evaluation in the exhaustion base case; no StateProjected.
+  expected_artifacts: Two immutable attempt lineages, distinct plans/validation records, same approval/envelope, failed rule
+    records, freshness/authority evidence, schedule/counter and circuit/escalation RuntimeEvents.
+  variants:
+  - variant_id: T07-V01
+    setup: Second plan conforms under unchanged approval/envelope; policy max_attempts=2.
+    expected: A remains terminal; B alone may pass all original gates and one commit/dispatch/reconciliation/final PROJECT.
+      Approval/envelope IDs unchanged; plan/validation/attempt IDs new.
+  - variant_id: T07-V02
+    setup: Requested target APPROVED, or authority missing/inactive, despite retry-enabled policy.
+    expected: S01-T02/S01-T03 remain FAIL_NONRETRYABLE; no automatic successor or execution.
+  - variant_id: T07-V03
+    setup: Before B allocation change source authority/observation version, definition, target, envelope or material approval
+      subject.
+    expected: HOLD/refusal with no B; never rebind prior approval. Required new approval is not invented. Unresolved cases
+      retain human-judgment requirement.
+  - variant_id: T07-V04
+    setup: Revoke grant without version change, or governing policy explicitly reserves missing human authorization.
+    expected: Known invalid grant nonretryable; reserved authorization HUMAN_AUTHORIZATION_REQUIRED; neither creates B.
+  - variant_id: T07-V05
+    setup: Scope has a retained commit but no dispatch; separately a dispatch claim, known effect, possible effect or unknown
+      admission/effect status.
+    expected: Zero automatic successor attempts and zero redispatch for every case; existing reconciliation/finalization only;
+      unknown facts HOLD_AMBIGUOUS.
+  - variant_id: T07-V06
+    setup: Missing/invalid/unbounded policy, missing terminal/recheck evidence or failed schedule/creation retention.
+    expected: Fail closed with no successor; no guessed budget or no-effect fact. Known policy opt-out forbids retry without
+      fake exhaustion.
+  - variant_id: T07-V07
+    setup: Consume the same retained scheduling record twice; request a new idempotency key after circuit/commit; attempt
+      third allocation after base sequence.
+    expected: At most existing B returned; count stays 2; no third attempt and no budget/circuit/admission reset.
+  - variant_id: T07-V08
+    setup: Finite repeated_failure_threshold=1 and max_attempts=3.
+    expected: First terminal eligible plan failure opens circuit and immediate human escalation; no successor despite spare
+      attempt budget.
+  - variant_id: T07-V09
+    setup: Ordinary eligible first plan failure with spare budget and no human-reserved authority.
+    expected: Automatic B permitted after fresh checks; no human approval demand solely because the planner/model participated.
+  base_realization_mode: EXPLICIT_PLAN
+  retry_enabled: true
+  requirement_refs:
+  - S01-R05
+  - S01-R07
+  - S01-R08
+  - S01-R09
+  - S01-R10
+  - S01-R11
+  - S01-R17
+  - S01-R19
+  - S01-R20
+  - S01-R21
+  - S01-R22
+  - S01-R23
+  - S01-R24
+  - S01-R25
+  - S01-R27
+- scenario_id: S01-T08
+  name: Same approved WHAT through two compliant HOW paths
+  base_realization_mode: BOTH_IN_ISOLATED_ALTERNATIVES
+  retry_enabled: false
+  setup: Create one immutable DOC-001 DRAFT->REVIEW CandidateTransition, ApprovedTransition, ExecutionEnvelope, definition,
+    active grant and source snapshots. Snapshot the fixture at the pre-realization boundary. Fork two isolated test executions
+    from that same immutable prefix; do not invoke A and then B sequentially on an already changed live object.
+  paths:
+  - path: A
+    mode: EXPLICIT_PLAN
+    how: GSRR PLANNER generates the one-step fixed-input plan; capability handler performs the validated operation.
+  - path: B
+    mode: DELEGATED_REALIZATION
+    how: Coordinator deterministically binds one capability responsibility without invoking GSRR PLANNER; provider derives
+      its internal pure procedure and requests the one allowed mediated update.
+  identity_comparison: Compare approval, transition, envelope, original snapshots, definition and authority records byte-for-byte
+    between alternatives. Each isolated run branch owns separate effect/journal/index state; existing prefix run_id is unchanged
+    in cloned fixtures. Unique new plan/validation/commit identities within each branch; branch labels are test harness metadata,
+    not new authority.
+  assertions:
+  - 'A invokes external PLANNER once; B invokes it zero times. Instrument provider internal planning: absent in A, present
+    in B. A mere mode-label change fails.'
+  - Both modes bind supported descriptor, exact fixed_input, complete envelope obligations and all normal conformance/admission/freshness
+    gates.
+  - Each isolated path invokes capability once, independently observes REVIEW/version2 with predecessor1 and matching own
+    commit, unchanged digest/existence and complete provider action history.
+  - Both RECONCILED_SUCCESS, then retained PROJECT/APPLIED with authority REVIEW/version2 only after final fresh checks and
+    atomic publication.
+  - Both retain identical approved WHAT, required grant and envelope; plan/commit identities and HOW ownership may differ
+    without broader permission.
+  - Provider pure internal planning need not be journaled; all effects are mediated. Opacity, native SUCCESS alone, or unsatisfied
+    trust/evidence fails equivalence.
+  variants:
+  - variant_id: T08-V01
+    setup: Delegated provider changes target or requests forbidden content/deletion/direct APPROVED/PUBLISHED; also test mutate-restore
+      and deletion-recreation through trusted diagnostic mediator.
+    expected: Prevent and record, or detect applied violation; RECONCILIATION_FAILED with retained DO_NOT_PROJECT, zero authoritative
+      admission and no effect retry.
+  - variant_id: T08-V02
+    setup: Keep target but drop required independent evidence; separately return false native SUCCESS.
+    expected: Missing evidence holds; complete unchanged DRAFT fails. Both retain negative decisions; S01-T05 remains valid.
+  - variant_id: T08-V03
+    setup: After validated binding substitute mode or plan; separately use approval specifically bound to old plan for a new
+      mode plan.
+    expected: No mutation/approval transfer; reject mismatch or require explicit reauthorization under supplied policy; no
+      new authority by mode choice.
+  - variant_id: T08-V04
+    setup: Delegated provider internal planning fails after commit without any observed write.
+    expected: Admission latch still prevents automatic successor or redispatch. Retain failure and finish independent reconciliation/negative
+      decision.
+  expected_events:
+  - AttemptStarted
+  - IntentStructured
+  - CandidateSelected
+  - TransitionValidated
+  - TransitionAuthorized
+  - ExecutionPlanValidated
+  - TransitionCommitted
+  - ExecutionCompleted
+  - TransitionReconciled
+  - StateProjected
+  expected_final_authoritative_state: REVIEW independently in A and B
+  expected_final_projection: One PROJECT/APPLIED per isolated alternative, never two sequential effects on one live state
+  requirement_refs:
+  - S01-R01
+  - S01-R02
+  - S01-R05
+  - S01-R06
+  - S01-R08
+  - S01-R09
+  - S01-R11
+  - S01-R12
+  - S01-R13
+  - S01-R14
+  - S01-R15
+  - S01-R16
+  - S01-R17
+  - S01-R18
+  - S01-R19
+  - S01-R20
+  - S01-R21
+  - S01-R26
+  - S01-R27
+diagnostic_case_groups:
+- scenario_id: RS-V01
+  name: Closed-fixture forbidden-action coverage
+  requirement_refs:
+  - S01-R06
+  - S01-R11
+  - S01-R13
+  - S01-R15
+  setup: Start from T01 valid commit; trusted fault injection uses the provider mediator.
+  cases:
+  - input: content write then restore, followed by REVIEW
+    expected: Complete ledger records both applied content writes; FAILED; DO_NOT_PROJECT even if final digest matches.
+  - input: delete then recreate, followed by REVIEW
+    expected: Existence history records deletion; FAILED; DO_NOT_PROJECT even when exists=true.
+  - input: state APPROVED then REVIEW; separately PUBLISHED then REVIEW
+    expected: Each prohibited intermediate state is in complete ledger; FAILED; DO_NOT_PROJECT.
+  - input: wrong-object, definition-write or nested invocation request
+    expected: Mediator/dispatch interface refuses and records attempted action; no permitted side effect; known failure prohibits
+      projection.
+  - input: provider interval missing/incomplete despite target-like final snapshot
+    expected: UNRESOLVED unless a higher-priority violation exists; HOLD_PROJECTION; no absence assertion.
+  expected_artifacts: Exact payload, independent snapshot/action history, per-prohibition findings and final negative decision;
+    authoritative DRAFT.
+  expected_events:
+  - IntentStructured
+  - CandidateSelected
+  - TransitionValidated
+  - TransitionAuthorized
+  - ExecutionPlanValidated
+  - TransitionCommitted
+  - ExecutionCompleted
+  - ReconciliationFailed
+  - TransitionRefused or TransitionHeld
+  scope: Data-only mediated fixture, not arbitrary host security.
+- scenario_id: RS-V02
+  name: Five reachable outcomes and precedence
+  requirement_refs:
+  - S01-R13
+  - S01-R14
+  - S01-R15
+  setup: Use only one required state effect and declared independent evidence variants.
+  cases:
+  - outcome: RECONCILED_SUCCESS
+    input: SUCCESS report; REVIEW-only complete ledger; all identity/version/grant/postconditions valid
+    expected: Eligible for final fresh gate; PROJECT only if publication succeeds.
+  - outcome: RECONCILIATION_FAILED
+    input: SUCCESS report and unchanged DRAFT baseline with complete empty action interval
+    expected: DO_NOT_PROJECT; authority unchanged.
+  - outcome: STALE_STATE
+    input: Current authority v2 replaces approved v1; no known invocation violation
+    expected: HOLD_PROJECTION; preserve current authority.
+  - outcome: RECONCILIATION_AMBIGUOUS
+    input: Two complete same-version observations conflict without known unrelated write, or UNKNOWN report attribution
+    expected: HOLD_PROJECTION; retain both.
+  - outcome: UNRESOLVED
+    input: Required provider observation or complete interval unavailable; no higher finding
+    expected: HOLD_PROJECTION; do not default to no effects.
+  - input: known forbidden invocation write plus stale version plus missing remaining evidence
+    expected: FAILED with all stale/unresolved findings retained; no positive absence claim.
+  expected_artifacts: One five-outcome ReconciliationResult and final ProjectionDecision per terminal evaluation.
+  expected_events: Comparison outcome followed by final decision event when available.
+  scope: PARTIAL_REALIZATION is not an active producer/consumer value or required runtime case.
+- scenario_id: RS-V03
+  name: Immutable dispatch payload substitution
+  requirement_refs:
+  - S01-R07
+  - S01-R08
+  - S01-R09
+  - S01-R11
+  setup: Valid immutable envelope/plan/validation/commit; alter presented commit/key/implementation/object or add an input
+    field.
+  expected: Equality guard refuses before invocation; original plan/commit remain unchanged; no projection evaluation. Matching
+    payload invokes exactly once.
+  expected_artifacts: Original immutable records and failed guard evidence; no ExecutionResult for an unstarted invocation.
+  expected_events: Commit prefix then refusal/hold; no ExecutionCompleted.
+  scope: One fixture invocation; no production signature requirement.
+- scenario_id: RS-V04
+  name: Final projection denial and publication failure
+  requirement_refs:
+  - S01-R15
+  - S01-R16
+  - S01-R17
+  setup: Reconciliation succeeds; final evaluation outcome retention was established before evaluation.
+  cases:
+  - input: Known final gate failure
+    expected: Retained DO_NOT_PROJECT; changed=false; no StateProjected.
+  - input: Stale or unresolved final gate
+    expected: Retained HOLD_PROJECTION; changed=false.
+  - input: Injected authority write/event preparation/publication failure before local aggregate replacement
+    expected: Retained DO_NOT_PROJECT / FAILED in pre-established outcome slot; unchanged authority; no StateProjected; journal_record_status=UNAVAILABLE
+      when append failed.
+  - input: Outcome retention unavailable before evaluation
+    expected: Hold before evaluation starts; no terminal evaluation or write claimed; no fabricated final record.
+  expected_artifacts: Final immutable decision with inputs/checks/causation and retained outcome reference for each completed
+    evaluation.
+  expected_events: StateProjected only on success; refusal/hold on available journal; explicit unavailable status in retained
+    failed decision otherwise.
+  scope: No guarantee across total in-memory run loss; no distributed transactions.
+- scenario_id: RS-V05
+  name: Historical duplicate before fresh execution
+  requirement_refs:
+  - S01-R02
+  - S01-R10
+  - S01-R20
+  setup: Complete T01 to authority v2; resubmit original key and immutable tuple.
+  cases:
+  - input: Exact old key/tuple
+    expected: Return same commit/result/decision as HISTORICAL_RETRIEVAL; zero fresh domain reads, zero new invocation/projection.
+  - input: Same key changed tuple
+    expected: Refuse; do not reinterpret changed parameters as prior result.
+  - input: Prior key with incomplete/unknown retained attempt
+    expected: Return held/incomplete retained status; no retry or invented result.
+  expected_artifacts: Existing records only plus optional retrieval observation; current authority not overwritten.
+  expected_events: No new successful execution or projection events.
+  scope: Same retained run only; no restart replay promise.
+- scenario_id: RS-V06
+  name: Current authority changes without state version change
+  requirement_refs:
+  - S01-R05
+  - S01-R15
+  setup: T01 reconciliation succeeds; fixture grant active flag changes before final gate while both state versions remain
+    equal.
+  expected: Known inactive grant -> final DO_NOT_PROJECT; unresolved grant -> HOLD_PROJECTION; no authoritative write/StateProjected.
+  expected_artifacts: Current grant check, same version evidence and retained final decision.
+  expected_events: TransitionReconciled followed by projection-gate refusal/hold.
+  scope: Trusted fixture grant only; no real IAM/revocation protocol.

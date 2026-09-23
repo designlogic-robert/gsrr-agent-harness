@@ -1,0 +1,41 @@
+%% Public bounded projection of GSRR Operation Core Slice 01.\n%% PCPK, DASA and MSP labels denote local Slice responsibilities; this repository does not contain their complete private architectures.\nflowchart LR
+  HUMAN["External domain / policy authority"] --> GRANT["Immutable scoped grant; exact human subject evidence only if required"]
+  SDS["SDS_PROVIDER: immutable domain fixture"] --> GOV["DASA-derived validity, authority and conformance checks"]
+  GRANT --> GOV
+  INIT["STATE_PROVIDER: original authority and observed snapshots"] --> GOV
+  MODEL["Candidate proposal; no authority"] --> PCPK["PCPK supplied selection only"]
+  PCPK --> GOV
+  MSP["One MSP-derived fixed sufficiency profile; conceptual guidance"] -.-> MODEL
+  MSP -.-> PLAN["Explicit planner"]
+  MSP -.-> REC["GSRR RECONCILER"]
+  GOV --> WHAT["Immutable ApprovedTransition and ExecutionEnvelope: WHAT"]
+  WHAT --> PLAN
+  WHAT --> DEL["Coordinator binds delegated responsibility: WHAT boundary"]
+  PLAN --> BIND["Immutable mode / one-step plan; independent validation"]
+  DEL --> BIND
+  BIND --> COMMIT["Coordinator: retained RealizationCommit; control state only"]
+  COMMIT --> EXEC["Executor: payload equality, fresh guards and one key claim"]
+  EXEC --> HOW["Registered capability: explicit HOW or provider-owned internal HOW"]
+  HOW --> MED["Trusted provider mediator: every effect request retained"]
+  MED --> OBS["Observed effect view: DRAFT to REVIEW"]
+  MED --> LEDGER["Complete closed action interval; forbidden and denied actions visible"]
+  OBS --> FRESH["Independent provider read"]
+  LEDGER --> FRESH
+  FRESH --> REC
+  WHAT --> REC
+  REC --> PROJ["PROJECTOR: retained final decision for every completed evaluation"]
+  GOV --> PROJ
+  AUTH["Authoritative view: initially DRAFT"] --> INIT
+  AUTH --> PROJ
+  PROJ -->|"Fresh success; conditional aggregate publication only"| AUTH
+  PROJ -->|"DO_NOT_PROJECT or HOLD_PROJECTION"| NEG["Negative evidence; no authoritative write or effect rollback"]
+  COMMIT --> JOURNAL["Append-only journal and retained outcome slot"]
+  EXEC --> JOURNAL
+  REC --> JOURNAL
+  PROJ --> JOURNAL
+  SUP["Existing coordinator: terminal attempt evidence, finite policy, scope counter and admission latch"] --> COMMIT
+  GOV --> SUP
+  SUP -->|"Eligible pre-admission explicit plan failure only; distinct new attempt"| PLAN
+  SUP -->|"Unknown / reserved authority / circuit open"| ESC["Human judgment / authorization / investigation; distinct reasons"]
+  JOURNAL -.-> LATER["Later SDFL evidence reconciliation; may propose definition revision"]
+  LATER -.-> REVIEW["Separate human authority; no runtime self-amendment"]

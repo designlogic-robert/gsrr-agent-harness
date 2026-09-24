@@ -2,7 +2,7 @@
 
 **A bounded, runnable case study in agentic systems design and governed state realization.**
 
-Status: v0.1 formation in progress  
+Status: v0.1 release candidate  
 License: Apache License 2.0  
 Production status: **NOT_PRODUCTION**
 
@@ -228,7 +228,9 @@ gsrr-agent-harness/
 │   ├── architecture.md
 │   ├── design-evolution.md
 │   ├── verification.md
-│   └── limitations.md
+│   ├── limitations.md
+│   ├── comprehension-walkthrough.md
+│   └── contribution-and-ai-disclosure.md
 ├── .github/workflows/test.yml
 ├── pyproject.toml
 └── LICENSE
@@ -243,6 +245,8 @@ The v0.1 repository also reserves an agent operating surface under `AGENTS.md` a
 - [`docs/verification.md`](docs/verification.md) — what the current evidence supports.
 - [`docs/limitations.md`](docs/limitations.md) — what this project explicitly does not establish.
 - [`specification/slice-01/README.md`](specification/slice-01/README.md) — the bounded public specification.
+- [`docs/comprehension-walkthrough.md`](docs/comprehension-walkthrough.md) — execution-first walkthrough for understanding the Slice 01 runtime and its control boundaries.
+- [`docs/contribution-and-ai-disclosure.md`](docs/contribution-and-ai-disclosure.md) — human/AI contribution model, implementation disclosure, and authorship boundaries.
 
 ## Development and AI collaboration posture
 

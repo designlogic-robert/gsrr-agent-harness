@@ -24,7 +24,7 @@ His contribution includes:
 - establishing the bounded public Slice 01 projection objective;
 - reviewing execution evidence and deciding whether work was acceptable to carry forward;
 - defining the public portfolio purpose and claim boundary;
-- performing the current human review and release/comprehension process.
+- performing human review of the public Slice and completing the v0.1 comprehension validation and release-candidate process.
 
 The repository's central architectural concerns include distinctions such as:
 

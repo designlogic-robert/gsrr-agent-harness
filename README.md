@@ -2,7 +2,7 @@
 
 **A bounded, runnable case study in agentic systems design and governed state realization.**
 
-Status: v0.1 release candidate  
+Status: v0.1 public release  
 License: Apache License 2.0  
 Production status: **NOT_PRODUCTION**
 

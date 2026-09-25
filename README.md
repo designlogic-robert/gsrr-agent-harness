@@ -2,7 +2,7 @@
 
 **A bounded, runnable case study in agentic systems design and governed state realization.**
 
-Status: v0.1 release candidate  
+Status: v0.1 public release  
 License: Apache License 2.0  
 Production status: **NOT_PRODUCTION**
 
@@ -68,6 +68,8 @@ explicit architecture
     ↓
 bounded specification
     ↓
+agent operating harness
+    ↓
 executable realization
     ↓
 independent tests
@@ -81,7 +83,9 @@ The Python implementation is evidence that the architecture can be realized as e
 
 [`specification/slice-01/`](specification/slice-01/)
 
-The public Slice 01 specification contains:
+The public Slice 01 specification defines the bounded state-realization contract that the implementation and tests are expected to preserve.
+
+It contains:
 
 - 27 normative requirements;
 - 8 base acceptance-scenario groups;
@@ -91,7 +95,36 @@ The public Slice 01 specification contains:
 
 Start with [`specification/slice-01/README.md`](specification/slice-01/README.md).
 
-### 2. Executable realization
+### 2. Agent operating harness
+
+[`AGENTS.md`](AGENTS.md)  
+[`.agents/skills/gsrr-state-realization/SKILL.md`](.agents/skills/gsrr-state-realization/SKILL.md)
+
+The repository includes an explicit operating surface for compatible AI agents working on Slice 01.
+
+`AGENTS.md` establishes repository-level scope, source precedence, invariants, mutation rules, verification expectations, reporting requirements, and stop conditions.
+
+The GSRR state-realization Skill provides the specialized procedure for work that can change or materially interpret Slice 01 semantics.
+
+Conceptually:
+
+```text
+task
+  ↓
+AGENTS.md
+  ↓
+scope + source + invariant routing
+  ↓
+GSRR state-realization Skill
+  ↓
+specification / implementation / tests
+  ↓
+verification + completion report
+```
+
+This harness is an instruction and procedure layer. It is not a non-bypassable security mechanism, sandbox, or hard capability boundary.
+
+### 3. Executable realization
 
 [`src/gsrr_slice01/`](src/gsrr_slice01/)
 
@@ -106,7 +139,7 @@ The implementation is a deterministic Python fixture with:
 - retained projection decisions;
 - bounded retry/successor behavior.
 
-### 3. Verification
+### 4. Verification
 
 [`tests/gsrr_slice01/`](tests/gsrr_slice01/)
 
@@ -221,9 +254,17 @@ The exact execution time is machine-dependent.
 
 ```text
 gsrr-agent-harness/
-├── specification/slice-01/   # bounded public system contract
-├── src/gsrr_slice01/         # executable Slice 01 realization
-├── tests/gsrr_slice01/       # independent executable verification
+├── AGENTS.md                       # repository-level agent operating contract
+├── .agents/
+│   └── skills/
+│       └── gsrr-state-realization/
+│           └── SKILL.md            # specialized state-realization procedure
+├── specification/slice-01/         # bounded public system contract
+├── src/gsrr_slice01/               # executable Slice 01 realization
+├── tests/gsrr_slice01/             # independent executable verification
+├── examples/
+│   ├── success_path.py
+│   └── false_success_path.py
 ├── docs/
 │   ├── architecture.md
 │   ├── design-evolution.md
@@ -236,10 +277,10 @@ gsrr-agent-harness/
 └── LICENSE
 ```
 
-The v0.1 repository also reserves an agent operating surface under `AGENTS.md` and `.agents/skills/`; that layer is separate from the Slice runtime itself and must not be confused with hard technical enforcement.
-
 ## Read next
 
+- [`AGENTS.md`](AGENTS.md) — repository-level operating contract for compatible AI agents.
+- [`.agents/skills/gsrr-state-realization/SKILL.md`](.agents/skills/gsrr-state-realization/SKILL.md) — specialized procedure for Slice 01 state-realization work.
 - [`docs/architecture.md`](docs/architecture.md) — how the current Slice works.
 - [`docs/design-evolution.md`](docs/design-evolution.md) — the design questions that produced the key separations.
 - [`docs/verification.md`](docs/verification.md) — what the current evidence supports.
